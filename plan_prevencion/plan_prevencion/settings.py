@@ -33,6 +33,8 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 LOGOUT_REDIRECT_URL = 'home'
+
+
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
     'proyecto_prevencion',
     'rest_framework',
     'drf_spectacular',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +68,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
+
+
 
 ROOT_URLCONF = 'plan_prevencion.urls'
 
@@ -160,3 +166,16 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Una API para gestionar Organismos Publicos y medidas de prevencion.',
     'VERSION': '1.0.0',
 }
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GITHUB_KEY = config('CLIENT_GITHUB')
+SOCIAL_AUTH_GITHUB_SECRET = config('SECRET_GITHUB')
+
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'home'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = 'home'
+
+SOCIAL_AUTH_GITHUB_SCOPE = ['read:user', 'user:email']

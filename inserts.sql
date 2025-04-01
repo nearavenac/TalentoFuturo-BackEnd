@@ -1,41 +1,43 @@
-INSERT INTO proyecto_prevencion_organismopublico (id, nombre_organismo) VALUES
-(1, 'Servicio de Evaluación Ambiental'),
-(2, 'Superintendencia de Electricidad y Combustibles'),
-(3, 'Intendencia Regional de Valparaíso'),
-(4, 'Dirección General del Territorio Marítimo y de Marina Mercante'),
-(5, 'Corporación Nacional Forestal'),
-(6, 'Servicio Agrícola y Ganadero'),
-(7, 'Carabineros de Chile'),
-(8, 'I. Municipalidades de Concón'),
-(9, 'I. Municipalidades de Quintero'),
-(10, 'I. Municipalidades de Puchuncaví'),
-(11, 'Seremi de Salud'),
-(12, 'Ministerio del Medio Ambiente'),
-(13, 'Seremi del Medio Ambiente');
+INSERT INTO proyecto_prevencion_organismopublico (id, nombre_organismo, activo) VALUES
+(1, 'Servicio de Evaluación Ambiental', True),
+(2, 'Superintendencia de Electricidad y Combustibles', True),
+(3, 'Intendencia Regional de Valparaíso', True),
+(4, 'Dirección General del Territorio Marítimo y de Marina Mercante', True),
+(5, 'Corporación Nacional Forestal', True),
+(6, 'Servicio Agrícola y Ganadero', True),
+(7, 'Carabineros de Chile', True),
+(8, 'I. Municipalidades de Concón', True),
+(9, 'I. Municipalidades de Quintero', True),
+(10, 'I. Municipalidades de Puchuncaví', True),
+(11, 'Seremi de Salud', True),
+(12, 'Ministerio del Medio Ambiente', True),
+(13, 'Seremi del Medio Ambiente', True);
 SELECT setval('proyecto_prevencion_organismopublico_id_seq', (SELECT MAX(id) FROM proyecto_prevencion_organismopublico));
 
-INSERT INTO proyecto_prevencion_comunaplan (id, nombre_comuna) VALUES
-(1, 'Concón'),
-(2, 'Quintero'),
-(3, 'Puchuncaví');
+INSERT INTO proyecto_prevencion_comunaplan (id, nombre_comuna, activo) VALUES
+(1, 'Concón', True),
+(2, 'Quintero', True),
+(3, 'Puchuncaví', True);
 SELECT setval('proyecto_prevencion_comunaplan_id_seq', (SELECT MAX(id) FROM proyecto_prevencion_comunaplan));
 
-INSERT INTO proyecto_prevencion_tiposmedidas (id, nombre_tipo_medida) VALUES
-(1, 'Política Pública'),
-(2, 'Educación y difusión'),
-(3, 'Estudios');
+INSERT INTO proyecto_prevencion_tiposmedidas (id, nombre_tipo_medida, activo) VALUES
+(1, 'Política Pública', True),
+(2, 'Educación y difusión',True),
+(3, 'Estudios', True);
 SELECT setval('proyecto_prevencion_tiposmedidas_id_seq', (SELECT MAX(id) FROM proyecto_prevencion_tiposmedidas));
 
 INSERT INTO proyecto_prevencion_medida (
     id,
-    id_tipo_medida_id,
+    tipo_medida_id,
     nombre_corto,
     nombre_largo,
-    id_organismo_id,
+    organismo_id,
     regulatorio,
     descripcion_formula,
     tipo_formula,
-    frecuencia
+    frecuencia,
+    activo,
+    proxima_fecha_carga
 )
 VALUES (
     1,
@@ -47,6 +49,7 @@ VALUES (
     'Suma del número de RCA aprobadas que contengan obligación de compensar emisiones atmosféricas',
     'Numero',
     'anual'
+    ,True,'01/04/2025'
 ),
 (
     2,
@@ -58,6 +61,7 @@ VALUES (
     '([N° de tanques del artículo 33 literal A) al cual se han implementado las medidas comprometidas en el año t]/[N° de tanques del artículo 33 literal A) programadas para el año t]) *100',
     'Formula',
     'anual'
+    ,True,'01/04/2025'
 ),
 (
     3,
@@ -69,6 +73,7 @@ VALUES (
     'Si/No',
     'Dicotomica',
     'unica'
+    ,True,'01/04/2025'
 ),
 (
     4,
@@ -80,6 +85,7 @@ VALUES (
     'Si/No',
     'Dicotomica',
     'unica'
+    ,True,'01/04/2025'
 ),
 (
     5,
@@ -91,6 +97,7 @@ VALUES (
     '([N° de tanques a los cuales se les implementaron sellos primarios y/o secundarios I en el año t]/[N° de tanques programados implementar para el año t]) * 100',
     'Formula',
     'anual'
+    ,True,'01/04/2025'
 ),
 (
     6,
@@ -102,6 +109,7 @@ VALUES (
     '([N° de sistemas de recuperación y/o eliminación de vapores mantenidos con TK mayores a 200m3 ]/[N° de sistemas de recuperación y/o eliminación de vapores existentes en instalaciones con TK mayores a 200m3]) * 100',
     'Formula',
     'anual'
+    ,True,'01/04/2025'
 ),
 (
     7,
@@ -113,6 +121,7 @@ VALUES (
     'Suma del número de fiscalizaciones ejecutadas en el año t a instalaciones de almacenamiento y distribución de combustible',
     'Numero',
     'anual'
+    ,True,'01/04/2025'
 ),
 (
     8,
@@ -124,6 +133,7 @@ VALUES (
     'Si/No',
     'Dicotomica',
     'unica'
+    ,True,'01/04/2025'
 ),
 (
     9,
@@ -135,58 +145,59 @@ VALUES (
     'Suma del número de fiscalizaciones a establecimiento que cuenten con sistema de venteo con quema controlada mediante antorcha',
     'Numero',
     'anual'
+    ,True,'01/04/2025'
 )
 ;
 SELECT setval('proyecto_prevencion_medida_id_seq', (SELECT MAX(id) FROM proyecto_prevencion_medida));
 
 
 -- Medida 1
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(1, 'Registro de las RCA aprobadas identificando el titular, la RCA, las emisiones y el monto a compensar');
+(1, 1, 'Registro de las RCA aprobadas identificando el titular, la RCA, las emisiones y el monto a compensar');
 
 -- Medida 2
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(2, 'Informe de Avance de Implementación de las medidas del Artículo 33 del Plan.'),
-(2, 'En caso de solicitar más plazo, Oficio de envío de la Resolución que califica el Cronograma de implementación gradual para el plazo de cumplimiento');
+(2,2, 'Informe de Avance de Implementación de las medidas del Artículo 33 del Plan.'),
+(2,2, 'En caso de solicitar más plazo, Oficio de envío de la Resolución que califica el Cronograma de implementación gradual para el plazo de cumplimiento');
 
 -- Medida 3
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(3, 'Oficialización de la Instrucción de SEC para cumplir con el sistema indicado en el artículo 33 del Plan.');
+(3, 3, 'Oficialización de la Instrucción de SEC para cumplir con el sistema indicado en el artículo 33 del Plan.');
 
 -- Medida 4
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(4, 'Resolución que aprueba por la SEC, el sistema intermedio u otro que cumpla con el mismo objetivo');
+(4, 4, 'Resolución que aprueba por la SEC, el sistema intermedio u otro que cumpla con el mismo objetivo');
 
 -- Medida 5
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(5, 'Informe de Avance de Implementación de las medidas del Artículo 33 del Plan'),
-(5, 'En caso de solicitar más plazo, Oficio de envio de la Resolución que califica el Cronograma de implementación gradual para el plazo de cumplimiento');
+(5, 5, 'Informe de Avance de Implementación de las medidas del Artículo 33 del Plan'),
+(5, 5, 'En caso de solicitar más plazo, Oficio de envio de la Resolución que califica el Cronograma de implementación gradual para el plazo de cumplimiento');
 
 -- Medida 6
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(6, 'Programa de mantención y operación de los dispositivos y/o infraestructura, recepcionado hasta mayo de cada año a la SEC');
+(6, 6, 'Programa de mantención y operación de los dispositivos y/o infraestructura, recepcionado hasta mayo de cada año a la SEC');
 
 -- Medida 7
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(7, 'Registro interno del servicio con el número de fiscalizaciones ejecutadas a instalaciones de almacenamiento y distribución de combustibles líquidos'),
-(7, 'Programa de mantención y operación de los dispositivos y/o infraestructura, recepcionado hasta mayo de cada año a la SEC');
+(7, 7, 'Registro interno del servicio con el número de fiscalizaciones ejecutadas a instalaciones de almacenamiento y distribución de combustibles líquidos'),
+(7, 7, 'Programa de mantención y operación de los dispositivos y/o infraestructura, recepcionado hasta mayo de cada año a la SEC');
 
 -- Medida 8
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(8, 'Registro fotográfico del piloto de encendido manual y automático, enviado a la SEC.'),
-(8, 'Registro del sistema de control de los sistemas de encendido, enviado a la SEC.');
+(8, 8, 'Registro fotográfico del piloto de encendido manual y automático, enviado a la SEC.'),
+(8, 8, 'Registro del sistema de control de los sistemas de encendido, enviado a la SEC.');
 
 -- Medida 9
-INSERT INTO proyecto_prevencion_documentorequerido (medida_id, descripcion)
+INSERT INTO proyecto_prevencion_documentorequerido (id, medida_id, descripcion)
 VALUES 
-(9, 'Registro interno del servicio del número de fiscalizaciones donde se verificó el cumplimiento del registro trazable actualizado, en formato físico y digital');
+(9, 9, 'Registro interno del servicio del número de fiscalizaciones donde se verificó el cumplimiento del registro trazable actualizado, en formato físico y digital');
 
 SELECT setval('proyecto_prevencion_documentorequerido_id_seq', (SELECT MAX(id) FROM proyecto_prevencion_documentorequerido));

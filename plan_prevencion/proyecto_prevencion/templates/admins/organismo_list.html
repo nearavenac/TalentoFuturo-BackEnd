@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Listado de Organismos Públicos{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="section-header">
+    <h2>Listado de Organismos Públicos</h2>
+    <hr>
+  </div>
+  <div class="mb-4">
+    <a href="{% url 'organismo_create' %}" class="btn btn-primary">Agregar Organismo</a>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true">
+      <thead class="table-dark">
+        <tr>
+          <th data-field="id" data-sortable="true">ID</th>
+          <th data-field="nombre" data-sortable="true">Nombre</th>
+          <th data-field="acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for organismo in organismos %}
+          <tr>
+            <td>{{ organismo.id }}</td>
+            <td>{{ organismo.nombre_organismo }}</td>
+            <td>
+              <a href="{% url 'organismo_update' organismo.id %}" class="btn btn-sm btn-warning">Editar</a>
+              <a href="#" class="btn btn-sm btn-danger" onclick="deleteOrganismo({{ organismo.id }}); return false;">Eliminar</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteOrganismo(pk) {
+    Swal.fire({
+        title: "¿Está seguro?",
+        text: "Esta acción eliminará el organismo.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const csrftoken = getCookie('csrftoken');
+            $.ajax({
+                url: "{% url 'organismo_delete' 0 %}".replace("0", pk),
+                type: "POST",
+                headers: {"X-CSRFToken": csrftoken},
+                success: function(response) {
+                    Swal.fire("Eliminado", "El organismo ha sido eliminado.", "success")
+                        .then(() => { location.reload(); });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire("Error", "No se pudo eliminar el organismo: " + error, "error");
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

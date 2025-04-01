@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from rest_framework import routers
 from proyecto_prevencion import views
@@ -22,19 +24,20 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 router = routers.DefaultRouter()
-router.register(r'organismos', views.OrganismoPublico)
-router.register(r'tipos_medidas', views.TiposMedidas)
-router.register(r'medidas', views.Medida)
-router.register(r'indicadores', views.Indicador)
-router.register(r'usuarios', views.Usuario)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path("api-auth/", include("rest_framework.urls")),
     path('', views.home, name='home'),
+    path('logout/', views.logout_view, name='admin_logout'),
+    
+    path('usuarios/', include('proyecto_prevencion.usuarios.urls')),
+    path('admins/', include('proyecto_prevencion.admins.urls')),
+    
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

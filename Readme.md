@@ -1,55 +1,65 @@
-Proyecto creado en sistema operativo windows
-Proyecto: Sistema de Reporte
-Objetivo: Registrar y reportar medidas de avance de los PPDA por parte de los organismos
-sectoriales, con enfoque en el plan de Concón, Quintero y Puchuncaví
-lenguaje: Python
-framework: Django
-base de datos: PostgreSQL
-editor de codigo: Visual Studio Code
-pruebas API REST con Postman
+# Sistema de Reporte
 
+Proyecto para registrar y reportar medidas de avance de los PPDA por parte de los organismos sectoriales, con enfoque en el plan de Concón, Quintero y Puchuncaví.
 
-# crear y activar entorno vistual
+## Requisitos
+- Python (3.x)
+- PostgreSQL
+
+## Pasos para levantar el proyecto
+
+### 1. Crear y activar el entorno virtual
+
+#### Windows
+```bash
 python -m venv venv
+venv\Scripts\activate
+```
 
-# instalar django
-pip install django
+#### macOS / Linux
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-# crear proyecto
-django-admin startproject plan_prevencion
+### 2. Instalar dependencias
+Asegúrate de tener el archivo requirements.txt actualizado y ejecuta:
 
-# crear app
-django-admin startapp proyecto_prevencion
+```bash
+pip install -r requirements.txt
+```
 
-# ejecutar servidor
-python manage.py runserver
+### 3. Configurar las variables de entorno
+Crea o actualiza el archivo .env en la raíz del proyecto con el siguiente contenido:
 
-# verificar cambios  en el model aplicados a la base de datos
+```ini
+DB_USER=postgres
+DB_PASSWORD=admin
+DEBUG=True
+```
+
+### 4. Ejecutar migraciones
+Genera y aplica las migraciones de la base de datos:
+
+```bash
 python manage.py makemigrations
-
-# ejecutar migraciones reflejadas en la base de datos
 python manage.py migrate
+```
 
-# configurar el settings.py
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'proyecto_prevencion',
-    'rest_framework',
-    'drf_spectacular',
-]
+### 5. Iniciar el servidor de desarrollo
+Levanta el servidor con:
 
-DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ppda',
-        'USER': 'xxxxxx', colocar las credenciales de postgres
-        'PASSWORD': 'xxxxxx', colocar las credenciales de postgres
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+```bash
+python manage.py runserver
+```
+
+Puedes levantar el servidor con https:
+
+```bash
+python -m uvicorn plan_prevencion.asgi:application \
+    --reload \
+    --ssl-keyfile=key.pem \
+    --ssl-certfile=cert.pem \
+    --host 127.0.0.1 \
+    --port 8000
+```

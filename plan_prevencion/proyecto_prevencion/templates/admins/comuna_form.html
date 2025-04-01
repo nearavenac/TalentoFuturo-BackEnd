@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<h2>{{ titulo }}</h2>
+<form method="post" class="needs-validation" novalidate>
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="id_nombre_comuna" class="form-label">Nombre de la Comuna</label>
+    {{ form.nombre_comuna }}
+    <div class="invalid-feedback">
+      Por favor ingrese el nombre de la comuna.
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+  <a href="{% url 'comuna_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

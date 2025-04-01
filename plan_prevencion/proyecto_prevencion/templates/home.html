@@ -1,17 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentacion de Proyecto Final</title>
-</head>
-<body>
-    <h1>Sistema de Reporte</h1>
-    <p>Objetivo:</p>
-    <p>Registrar y reportar medidas de avance de los PPDA por parte de los
-        organismos sectoriales, con enfoque en el plan de Concón, Quintero y
-        Puchuncaví.</p>
-        <p>Grupo 1</p>
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inicio{% endblock %}
+{% block extra_head %}
+  {{ block.super }}
+  <style>
+    .hero {
+      background: url({% static "img/hero_placeholder.jpg" %}) no-repeat center center;
+      background-size: cover;
+      padding: 100px 0;
+      color: #000;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    .hero p {
+      font-size: 1.25rem;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+  <div class="hero text-center">
+    <div class="container">
+      <h1>Bienvenido a PPDA Grupo1</h1>
+      <p class="lead">Sistema de Registro y Reporte del Estado de Avance del Plan de Prevención y Descontaminación Atmosférica para las Comunas de Concón, Quintero y Puchuncaví.</p>
+      <p>En este sistema, las instituciones pueden subir documentos para cumplir con la normativa ambiental y llevar un control del avance del plan de prevención.</p>
+      <a href="{% url 'register' %}" class="btn btn-lg btn-primary mt-4">Regístrate</a>
+    </div>
+  </div>
+  <div class="container my-5">
+    <h2>Acerca del Proyecto</h2>
+    <p>Este proyecto se implementa en base a las instrucciones generales dictadas en la Resolución N° 1.379 exenta, de Santiago, 7 de agosto de 2020, la cual establece las instrucciones para el registro y reporte del estado de avance del plan de prevención y descontaminación atmosférica para las comunas de Concón, Quintero y Puchuncaví. Nuestro sistema facilita el proceso de subida y validación de documentos, permitiendo que cada institución cumpla con las normativas vigentes de forma transparente y organizada.</p>
+  </div>
+{% endblock %}

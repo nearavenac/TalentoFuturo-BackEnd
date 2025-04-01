@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<h2>{{ titulo }}</h2>
+<form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+  {% csrf_token %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Documento</th>
+        <th>Archivo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for desc, field in fields_list %}
+      <tr>
+        <td>{{ desc }}</td>
+        <td>{{ field }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-primary">Subir Documentos</button>
+  <a href="{% url 'usuario_dashboard' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

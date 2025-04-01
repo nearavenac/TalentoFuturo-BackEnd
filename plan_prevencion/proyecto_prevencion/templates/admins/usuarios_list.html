@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="section-header">
+    <h2>Listado de Usuarios Pendientes</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Rut</th>
+          <th>Email</th>
+          <th>Organismo</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in pending_users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.first_name }} {{ user.last_name }}</td>
+          <td>{{ user.rut_usuario }}</td>
+          <td>{{ user.username }}</td>
+          <td>
+            {% if user.organismo %}
+              {{ user.organismo }}
+            {% else %}
+              <span class="text-muted">Sin organismo</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'aprobar_usuario' user.id %}" class="btn btn-success btn-sm">Aprobar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header mt-5">
+    <h2>Usuarios Aprobados</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Rut</th>
+          <th>Email</th>
+          <th>Organismo</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in approved_users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.first_name }} {{ user.last_name }}</td>
+          <td>{{ user.rut_usuario }}</td>
+          <td>{{ user.username }}</td>
+          <td>
+            {% if user.organismo %}
+              {{ user.organismo }}
+            {% else %}
+              <span class="text-muted">Sin organismo</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="#" class="btn btn-sm btn-secondary" onclick="desactivarUsuario({{ user.id }}); return false;">Desactivar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function desactivarUsuario(pk) {
+    Swal.fire({
+        title: "¿Está seguro?",
+        text: "Esta acción desactivará al usuario aprobado.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, desactivar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const csrftoken = getCookie('csrftoken');
+            $.ajax({
+                url: "{% url 'desactivar_usuario' 0 %}".replace("0", pk),
+                type: "POST",
+                headers: {"X-CSRFToken": csrftoken},
+                success: function(response) {
+                    Swal.fire("Desactivado", "El usuario ha sido desactivado.", "success")
+                        .then(() => { location.reload(); });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire("Error", "No se pudo desactivar el usuario: " + error, "error");
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

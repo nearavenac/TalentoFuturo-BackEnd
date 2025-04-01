@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<h2>{{ titulo }}</h2>
+<form method="post" class="needs-validation" novalidate>
+  {% csrf_token %}
+  
+  <!-- Campos regulares -->
+  <div class="mb-3">
+    <label for="{{ form.nombre_corto.id_for_label }}" class="form-label">Nombre Corto</label>
+    {{ form.nombre_corto }}
+  </div>
+  <div class="mb-3">
+    <label for="{{ form.nombre_largo.id_for_label }}" class="form-label">Nombre Largo</label>
+    {{ form.nombre_largo }}
+  </div>
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <label for="{{ form.organismo.id_for_label }}" class="form-label">Organismo</label>
+      {{ form.organismo|add_class:"form-control"|attr:"required:required" }}
+    </div>
+  </div>
+  <div class="mb-3 form-check">
+    {{ form.regulatorio }}
+    <label class="form-check-label" for="{{ form.regulatorio.id_for_label }}">Regulatorio</label>
+  </div>
+  <div class="mb-3" id="tipo-medida-section">
+    <label for="{{ form.tipo_medida.id_for_label }}" class="form-label">Tipo de Medida</label>
+    {{ form.tipo_medida }}
+  </div>
+  <div class="mb-3">
+    <label for="{{ form.descripcion_formula.id_for_label }}" class="form-label">Descripción de la Fórmula</label>
+    {{ form.descripcion_formula }}
+  </div>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="{{ form.tipo_formula.id_for_label }}" class="form-label">Tipo de Fórmula</label>
+      {{ form.tipo_formula }}
+    </div>
+    <div class="col-md-6">
+      <label for="{{ form.frecuencia.id_for_label }}" class="form-label">Frecuencia</label>
+      {{ form.frecuencia }}
+    </div>
+  </div>
+  
+  <!-- Sección para datos_requeridos (Documentos Requeridos) -->
+  <h3>Documentos Requeridos</h3>
+  <table class="table" id="docs-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas dinámicas -->
+    </tbody>
+  </table>
+  <button type="button" class="btn btn-secondary mb-3" id="add-doc">Agregar Documento</button>
+  
+  <!-- Campo oculto con el JSON -->
+  {{ form.datos_requeridos }}
+  
+  <br><br>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+  <a href="{% url 'medida_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function(){
+  function toggleTipoMedida() {
+    console.log(1);
+    if ($("#id_regulatorio").is(":checked")) {
+      $("#tipo-medida-section").hide();
+      $("#id_tipo_medida").val("");
+    } else {
+      $("#tipo-medida-section").show();
+    }
+  }
+
+  $("#id_regulatorio").change(function(){
+    toggleTipoMedida();
+  });
+
+  toggleTipoMedida();
+
+  // 1) Cargar la lista desde el hidden (modo edición)
+  function loadDocs() {
+    var jsonStr = $("#id_datos_requeridos").val();
+    if (jsonStr) {
+      try {
+        var docs = JSON.parse(jsonStr);
+        $("#docs-table tbody").empty();
+        docs.forEach((desc, i) => {
+          addRow(desc, i+1);
+        });
+      } catch(e) {
+        console.log("Error parseando JSON:", e);
+      }
+    }
+  }
+
+  // 2) Agregar fila a la tabla
+  function addRow(desc, index) {
+    var row = `<tr>
+      <td>${index}</td>
+      <td><input type="text" class="form-control doc-value" value="${desc || ''}" placeholder="Descripción"></td>
+      <td><button type="button" class="btn btn-danger remove-doc">Quitar</button></td>
+    </tr>`;
+    $("#docs-table tbody").append(row);
+  }
+
+  // 3) Reindexar y actualizar el hidden
+  function updateDocs() {
+    var docs = [];
+    $("#docs-table tbody tr").each(function(){
+      var val = $(this).find(".doc-value").val().trim();
+      if (val) docs.push(val);
+    });
+    $("#docs-table tbody tr").each(function(i){
+      $(this).find("td:first").text(i+1);
+    });
+    $("#id_datos_requeridos").val(JSON.stringify(docs));
+  }
+
+  // 4) Al hacer clic en "Agregar Documento"
+  $("#add-doc").click(function(){
+    var index = $("#docs-table tbody tr").length + 1;
+    addRow("", index);
+  });
+
+  // 5) Al quitar un documento
+  $(document).on("click", ".remove-doc", function(){
+    $(this).closest("tr").remove();
+    updateDocs();
+  });
+
+  // 6) Al cambiar algo en los inputs
+  $(document).on("change", ".doc-value", function(){
+    updateDocs();
+  });
+
+  // 7) Cargar si ya hay algo en el hidden (modo edición)
+  loadDocs();
+
+  // 8) Antes de enviar, asegurarse de actualizar
+  $("form").submit(function(){
+    updateDocs();
+  });
+});
+</script>
+{% endblock %}

@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'proyecto_prevencion.Usuario'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -24,9 +26,21 @@ SECRET_KEY = 'django-insecure-hh9$4!agm+els)!1makt5vs=!neyytw5o5-$00wfadb^$*kpo(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DEBUG = config('DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = []
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = BASE_DIR / 'uploads'
 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+LOGOUT_REDIRECT_URL = 'home'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = config('MAILTRAP_USER')
+EMAIL_HOST_PASSWORD = config('MAILTRAP_PASS')
+EMAIL_PORT = '2525'
 
 # Application definition
 
@@ -37,10 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'proyecto_prevencion',
+    'widget_tweaks',
+    'proyecto_prevencion',
     'rest_framework',
     'drf_spectacular',
-    'proyecto_prevencion.apps.ProyectoprevencionConfig', 
 ]
 
 MIDDLEWARE = [
@@ -81,8 +95,8 @@ DATABASES = {
      'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ppda',
-        'USER': 'postgres',
-        'PASSWORD': '20Shaq**',
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -111,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -131,18 +145,18 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser',
-    ],   
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.BasicAuthentication',
+    #     'rest_framework.authentication.SessionAuthentication',
+    # ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAdminUser',
+    # ],
 }
 
 SPECTACULAR_SETTINGS = {
-'TITLE': 'API de Plan Prevencion',
-'DESCRIPTION': 'Una API para gestionar Organismos Publicos y medidas de prevencion.',
-'VERSION': '1.0.0',
+    'TITLE': 'API de Plan Prevencion',
+    'DESCRIPTION': 'Una API para gestionar Organismos Publicos y medidas de prevencion.',
+    'VERSION': '1.0.0',
 }

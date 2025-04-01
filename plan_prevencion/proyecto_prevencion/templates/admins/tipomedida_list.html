@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Listado de Tipos de Medidas{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="section-header">
+    <h2>Listado de Tipo de Medida</h2>
+    <hr>
+  </div>
+  <div class="mb-4">
+    <a href="{% url 'tipomedida_create' %}" class="btn btn-primary">Agregar Tipo de Medida</a>
+  </div>
+  <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true">
+      <thead class="table-dark">
+        <tr>
+          <th data-field="id" data-sortable="true">ID</th>
+          <th data-field="nombre" data-sortable="true">Nombre</th>
+          <th data-field="acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for medida in medidas %}
+          <tr>
+            <td>{{ medida.id }}</td>
+            <td>{{ medida.nombre_tipo_medida }}</td>
+            <td>
+              <a href="{% url 'tipomedida_update' medida.id %}" class="btn btn-sm btn-warning">Editar</a>
+              <a href="#" class="btn btn-sm btn-danger" onclick="deleteTipomedida({{ medida.id }}); return false;">Eliminar</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteTipomedida(pk) {
+    Swal.fire({
+        title: "¿Está seguro?",
+        text: "Esta acción eliminará el tipo de medida.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const csrftoken = getCookie('csrftoken');
+            $.ajax({
+                url: "{% url 'tipomedida_delete' 0 %}".replace("0", pk),
+                type: "POST",
+                headers: {"X-CSRFToken": csrftoken},
+                success: function(response) {
+                    Swal.fire("Eliminado", "El tipo de medida ha sido eliminado.", "success")
+                        .then(() => { location.reload(); });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire("Error", "No se pudo eliminar el tipo de medida: " + error, "error");
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Panel Usuario{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="section-header">
+    <h2>Medidas Aprobadas</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true"
+        data-locale="es-CL">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre Corto</th>
+          <th>Periodicidad</th>
+          <th>Fecha de Aprobación</th>
+          <th>Próxima Fecha de Carga</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for medida, indicador in approved %}
+          <tr>
+            <td>{{ medida.id }}</td>
+            <td>{{ medida.nombre_corto }}</td>
+            <td>{{ indicador.medida.frecuencia|capfirst }}</td>
+            <td>{{ indicador.fecha_aprobacion|date:"d/m/Y H:i" }}</td>
+            <td>
+              {% if indicador.medida.proxima_fecha_carga %}
+                {{ indicador.medida.proxima_fecha_carga |date:"d/m/Y"}}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header mt-5">
+    <h2>Pendientes de revisión</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true"
+        data-locale="es-CL">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre Corto</th>
+          <th>Fecha de Reporte</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for medida, indicador in pending_review %}
+          <tr>
+            <td>{{ medida.id }}</td>
+            <td>{{ medida.nombre_corto }}</td>
+            <td>{{ indicador.fecha_reporte }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header mt-5">
+    <h2>Medidas Rechazadas</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true"
+        data-locale="es-CL">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre Corto</th>
+          <th>Fecha de Reporte</th>
+          <th>Fecha de Rechazo</th>
+          <th>Motivo Rechazo</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for medida, indicador in rejected %}
+          <tr>
+            <td>{{ medida.id }}</td>
+            <td>{{ medida.nombre_corto }}</td>
+            <td>{{ indicador.fecha_reporte }}</td>
+            <td>{{ indicador.fecha_rechazo }}</td>
+            <td>{{ indicador.motivo_rechazo }}</td>
+            <td>
+              <a href="{% url 'subir_documentos' medida.id %}" class="btn btn-sm btn-primary">Volver a Subir</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header mt-5">
+    <h2>Medidas Pendientes de subir</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+        class="table table-hover modern-table"
+        data-toggle="table"
+        data-search="true"
+        data-sortable="true"
+        data-locale="es-CL">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre Corto</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for medida in pending_completion %}
+          <tr>
+            <td>{{ medida.id }}</td>
+            <td>{{ medida.nombre_corto }}</td>
+            <td>
+              <a href="{% url 'subir_documentos' medida.id %}" class="btn btn-sm btn-primary">Subir</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

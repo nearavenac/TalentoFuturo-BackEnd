@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Listado de Indicadores{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="section-header">
+    <h2>Listado de Indicadores</h2>
+    <hr>
+  </div>
+  <div class="table-responsive">
+    <table 
+      class="table table-hover modern-table"
+      data-toggle="table"
+      data-search="true"
+      data-sortable="true"
+      data-locale="es-CL">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Medida</th>
+          <th>Usuario</th>
+          <th>Fecha Reporte</th>
+          <th>Estado</th>
+          <th>Archivos</th>
+          <th>Motivo Rechazo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for indicador in indicadores %}
+        <tr>
+          <td>{{ indicador.id }}</td>
+          <td>{{ indicador.medida.nombre_corto }}</td>
+          <td>
+            {{ indicador.usuario.first_name }} {{ indicador.usuario.last_name }}  
+            <br>
+            <small class="text-muted">{{ indicador.usuario.rut_usuario }}</small>
+          </td>
+          <td>{{ indicador.fecha_reporte }}</td>
+          <td>
+            {% if indicador.fecha_aprobacion %}
+              <span class="badge bg-success">Aprobado</span>
+            {% elif indicador.fecha_rechazo %}
+              <span class="badge bg-danger">Rechazado</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Pendiente</span>
+            {% endif %}
+          </td>
+          <td>
+            {% for doc_subido in indicador.documentos_subidos.all %}
+              <a href="{{ doc_subido.archivo.url }}" target="_blank">Ver</a><br>
+            {% empty %}
+              <span class="text-muted">No hay archivos</span>
+            {% endfor %}
+          </td>
+          <td>
+            {% if indicador.motivo_rechazo %}
+              {{ indicador.motivo_rechazo }}
+            {% else %}
+              <span class="text-muted">N/A</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if not indicador.fecha_aprobacion and not indicador.fecha_rechazo %}
+              <form action="{% url 'aprobar_indicador' indicador.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">Aprobar</button>
+              </form>
+              <button type="button" class="btn btn-sm btn-danger" onclick="showRejectModal({{ indicador.id }})">Rechazar</button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para rechazo -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" id="rejectForm">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Rechazar Indicador</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <label for="motivo" class="form-label">Motivo de Rechazo</label>
+          <textarea name="motivo" id="motivo" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Rechazar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function showRejectModal(indicadorId) {
+    var urlRechazo = "{% url 'rechazar_indicador' 9999 %}".replace("9999", indicadorId);
+    $("#rejectForm").attr("action", urlRechazo);
+    
+    var rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'), {
+      backdrop: 'static',
+      keyboard: false
+    });
+    rejectModal.show();
+  }  
+</script>
+{% endblock %}

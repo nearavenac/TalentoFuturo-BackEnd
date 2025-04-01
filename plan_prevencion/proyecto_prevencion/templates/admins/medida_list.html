@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Listado de Medidas{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="section-header">
+    <h2>Listado de Medidas</h2>
+    <hr>
+  </div>
+  <div class="mb-4">
+    <a href="{% url 'medida_create' %}" class="btn btn-primary">Agregar Medida</a>
+  </div>
+  <div class="table-responsive">
+    <table 
+      class="table table-hover modern-table"
+      data-toggle="table"
+      data-search="true"
+      data-sortable="true">
+      <thead class="table-dark">
+        <tr>
+          <th data-field="id" data-sortable="true">ID</th>
+          <th data-field="nombre_corto" data-sortable="true">Nombre Corto</th>
+          <th data-field="nombre_largo" data-sortable="true">Nombre Largo</th>
+          <th data-field="organismo" data-sortable="true">Organismo</th>
+          <th data-field="acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for medida in medidas %}
+          <tr>
+            <td>{{ medida.id }}</td>
+            <td>{{ medida.nombre_corto }}</td>
+            <td>{{ medida.nombre_largo }}</td>
+            <td>{{ medida.organismo }}</td>
+            <td>
+              <a href="{% url 'medida_update' medida.id %}" class="btn btn-sm btn-warning">Editar</a>
+              <a href="#" class="btn btn-sm btn-danger" onclick="deleteMedida({{ medida.id }}); return false;">Eliminar</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteMedida(pk) {
+    Swal.fire({
+        title: "¿Está seguro?",
+        text: "Esta acción eliminará la medida.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const csrftoken = getCookie('csrftoken');
+            $.ajax({
+                url: "{% url 'medida_delete' 0 %}".replace("0", pk),
+                type: "POST",
+                headers: {"X-CSRFToken": csrftoken},
+                success: function(response) {
+                    Swal.fire("Eliminado", "La medida ha sido eliminada.", "success")
+                        .then(() => { location.reload(); });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire("Error", "No se pudo eliminar la medida: " + error, "error");
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

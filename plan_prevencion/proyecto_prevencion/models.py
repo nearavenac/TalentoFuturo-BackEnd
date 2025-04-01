@@ -1,92 +1,86 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 # Create your models here.
 class OrganismoPublico(models.Model):
-    """
-    Representa a un organismo público
-
-    Atributos:
-    - id_organismo(int): identificador único del organismo
-    - nombre_organismo(str): nombre del organismo
-    """
-    id_organismo = models.AutoField(primary_key=True)
     nombre_organismo = models.CharField(max_length=100)
-    only_admin =  models.BooleanField(default=False)
+    activo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre_organismo
+    
+class ComunaPlan(models.Model):
+    nombre_comuna = models.CharField(max_length=100)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nombre_comuna
 
 class TiposMedidas(models.Model):
-    """
-    Representa los tipos de medidas que se pueden realizar en el sistema
-
-    Atributos:
-    - id_tipo_medida(int): identificador único del tipo de medida
-    - nombre_tipo_medida(str): nombre del tipo de medida
-    """
-    id_tipo_medida = models.AutoField(primary_key=True)
     nombre_tipo_medida = models.CharField(max_length=100)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nombre_tipo_medida
 
 class Medida(models.Model):
-    """
-    Representa una medida que se puede realizar en el sistema
+    TIPO_FORMULA_CHOICES = [
+        ('Formula', 'Formula'),
+        ('Dicotomica', 'Dicotómica'),
+        ('Numero', 'Número'),
+    ]
 
-    Atributos:  
-    - id_medida(int): identificador único de la medida
-    - id_tipo_medida(int): identificador del tipo de medida
-    - nombre_largo(str): nombre largo de la medida
-    - id_organismo(int): identificador del organismo al que pertenece la medida
-    - regulatorio(bool): si la medida es regulatoria o no
-    - tipo_formula(float): tipo de formula que se utiliza para calcular el indicador
-    - datos_requeridos(str): datos requeridos para realizar la medida
-    - formula(float): formula matemática para calcular el indicador
-    - umbral_medida(float): umbral de la medida
+    FRECUENCIA_CHOICES = [
+        ('anual', 'Anual'),
+        ('unica', 'Única'),
+    ]
 
-    """
-    id_medida = models.AutoField(primary_key=True)
-    id_tipo_medida = models.ForeignKey(TiposMedidas, on_delete=models.CASCADE)
-    nombre_largo = models.CharField(max_length=100)
-    id_organismo = models.ForeignKey(OrganismoPublico, on_delete=models.CASCADE)
+    tipo_medida = models.ForeignKey(TiposMedidas, on_delete=models.CASCADE,null=True, blank=True)
+    nombre_corto = models.CharField(max_length=255)
+    nombre_largo = models.CharField(max_length=255)
+    organismo = models.ForeignKey(OrganismoPublico, on_delete=models.CASCADE)
     regulatorio = models.BooleanField(default=True)
-    tipo_formula = models.FloatField()
-    datos_requeridos = models.CharField(max_length=100)
-    formula = models.FloatField()
-    umbral_medida = models.FloatField()
+    descripcion_formula = models.TextField()
+    tipo_formula = models.CharField(max_length=20, choices=TIPO_FORMULA_CHOICES)
+    frecuencia = models.CharField(max_length=10, choices=FRECUENCIA_CHOICES)
+    proxima_fecha_carga = models.DateField(null=True, blank=True)
+    activo = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.nombre_corto
+    
+class DocumentoRequerido(models.Model):
+    medida = models.ForeignKey(Medida, on_delete=models.CASCADE, related_name="documentos_requeridos")
+    descripcion = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.descripcion
+
+class Usuario(AbstractUser):
+    rut_usuario = models.CharField(unique=True, blank=True, null=True, max_length=10)
+    organismo = models.ForeignKey(OrganismoPublico, blank=True, null=True, on_delete=models.CASCADE)
+    aprobado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.username
+    
 class Indicador(models.Model):
-    """
-    Representa un indicador que se calcula a partir de las medidas realizadas
-
-    Atributos:
-    - id_indicador(int): identificador único del indicador
-    - id_medida(int): identificador del tipo de medida
-    - data(dict): datos del indicador
-    - calculo_indicador(float): valor del indicador
-    - cumple_requisitos(bool): si cumplen los requisitos para el indicador
-    - fecha_reporte(date): fecha de reporte del indicador
-    """
-    id_indicador = models.AutoField(primary_key=True)
-    id_medida = models.ForeignKey(Medida, on_delete=models.CASCADE)
-    data = models.JSONField(default=dict)
+    medida = models.ForeignKey(Medida, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     calculo_indicador = models.FloatField()
     cumple_requisitos = models.BooleanField(default=True)
-    fecha_reporte = models.DateField(auto_now_add=True)
+    fecha_reporte = models.DateTimeField(auto_now_add=True)
+    fecha_aprobacion = models.DateTimeField(null=True, blank=True)
+    fecha_rechazo = models.DateTimeField(null=True, blank=True)
+    motivo_rechazo = models.TextField(null=True, blank=True)
 
-class Usuario(models.Model):
-    """
-    Representa un usuario del sistema
+    def __str__(self):
+        return f"Indicador para {self.medida.nombre_corto}"
+    
+class DocumentoSubido(models.Model):
+    indicador = models.ForeignKey(Indicador, on_delete=models.CASCADE, related_name="documentos_subidos")
+    documento_requerido = models.ForeignKey(DocumentoRequerido, on_delete=models.CASCADE)
+    archivo = models.FileField(upload_to='uploads/')
 
-    Atributos:
-    - id_usuario(int): identificador único del usuario
-    - rut_usuario(str): rut del usuario
-    - nombre_usuario(str): nombre del usuario
-    - direccion(str): direccion del usuario
-    - correo(str): correo electrónico del usuario
-    - id_organismo(int): identificador del organismo al que pertenece el usuario
-    """
-    id_usuario = models.AutoField(primary_key=True)
-    rut_usuario = models.CharField(unique=True, blank=True, null=True, max_length=10)
-    nombre_usuario = models.CharField(max_length=50)
-    direccion = models.CharField(blank=True, null=True, max_length=100)
-    correo = models.EmailField(max_length=50)
-    id_organismo = models.ForeignKey(OrganismoPublico, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.documento_requerido.descripcion} para {self.indicador.medida.nombre_corto}"

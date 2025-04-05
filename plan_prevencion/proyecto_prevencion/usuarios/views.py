@@ -19,22 +19,26 @@ from proyecto_prevencion.models import Medida, Indicador, DocumentoSubido
 from .forms import generar_subir_documentos_form
 from proyecto_prevencion.utils.decorators import require_permission
 
+
 class UserLoginView(LoginView):
     template_name = 'usuarios/login.html'
-    
+
     def get_success_url(self):
         return reverse_lazy('home')
-    
+
+
 def register(request):
     if request.method == 'POST':
         form = UsuarioRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Registro exitoso. Se le avisará cuando su cuenta sea validada.")
+            messages.success(
+                request, "Registro exitoso. Se le avisará cuando su cuenta sea validada.")
             return redirect('home')
     else:
         form = UsuarioRegistrationForm()
     return render(request, 'usuarios/register.html', {'form': form})
+
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication])
@@ -44,14 +48,15 @@ def register(request):
 def dashboard(request):
     user = request.user
     measures = Medida.objects.filter(organismo=user.organismo, activo=True)
-    
+
     approved = []
     pending_review = []
     rejected = []
     pending_completion = []
 
     for measure in measures:
-        indicator = Indicador.objects.filter(medida=measure, usuario=user).order_by('-fecha_reporte').first()
+        indicator = Indicador.objects.filter(
+            medida=measure, usuario=user).order_by('-fecha_reporte').first()
         if indicator:
             if indicator.cumple_requisitos:
                 approved.append((measure, indicator))
@@ -62,14 +67,15 @@ def dashboard(request):
                     pending_review.append((measure, indicator))
         else:
             pending_completion.append(measure)
-    
+
     context = {
-       'approved': approved,
-       'pending_review': pending_review,
-       'rejected': rejected,
-       'pending_completion': pending_completion,
+        'approved': approved,
+        'pending_review': pending_review,
+        'rejected': rejected,
+        'pending_completion': pending_completion,
     }
     return Response(context, template_name='usuarios/dashboard.html')
+
 
 @api_view(['GET', 'POST'])
 @authentication_classes([SessionAuthentication])
@@ -79,16 +85,18 @@ def dashboard(request):
 def subir_documentos(request, medida_id):
     user = request.user
     if user.is_superuser:
-        messages.error(request, "Los administradores no pueden subir documentos.")
+        messages.error(
+            request, "Los administradores no pueden subir documentos.")
         return redirect(reverse_lazy('usuario_dashboard'))
     medida = get_object_or_404(Medida, pk=medida_id)
     if medida.organismo != user.organismo:
-        messages.error(request, "No tienes permiso para subir documentos para esta medida.")
+        messages.error(
+            request, "No tienes permiso para subir documentos para esta medida.")
         return redirect(reverse_lazy('usuario_dashboard'))
-    
+
     documentos = medida.documentos_requeridos.all()
     SubirDocumentosForm = generar_subir_documentos_form(documentos)
-    
+
     if request.method == 'POST':
         form = SubirDocumentosForm(request.POST, request.FILES)
         if form.is_valid():
@@ -109,15 +117,17 @@ def subir_documentos(request, medida_id):
                             documento_requerido=doc,
                             archivo=filename,
                         )
-                messages.success(request, "Documentos subidos correctamente. Espera validación del admin.")
+                messages.success(
+                    request, "Documentos subidos correctamente. Espera validación del admin.")
                 return redirect('usuario_dashboard')
             except Exception as e:
                 error_text = str(e).splitlines()[0]
-                messages.error(request, "Error al subir documentos: " + error_text)
+                messages.error(
+                    request, "Error al subir documentos: " + error_text)
                 return redirect('subir_documentos', medida_id=medida.id)
     else:
         form = SubirDocumentosForm()
-    
+
     fields_list = []
     for doc in documentos:
         field_name = f"doc_{doc.id}"

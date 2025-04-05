@@ -24,6 +24,10 @@
         <button type="submit" class="btn btn-secondary w-100">Entrar</button>
       </form>
     </div>
+    <a href="{% url 'social:begin' 'github' %}" style="text-align: center; display: flex; align-items: center; padding: 10px 15px; background-color: #24292f; color: white; border-radius: 5px; text-decoration: none;">
+      <i class="fab fa-github" style="font-size: 20px; margin-right: 10px; transform: none;"></i>
+      Iniciar sesión con GitHub
+    </a>
   </div>
 </div>
 {% endblock %}

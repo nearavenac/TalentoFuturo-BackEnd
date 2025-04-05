@@ -31,8 +31,10 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path('', views.home, name='home'),
     path('logout/', views.logout_view, name='admin_logout'),
-    
+
+    path('auth/', include('social_django.urls', namespace='social')),
     path('usuarios/', include('proyecto_prevencion.usuarios.urls')),
+    
     path('admins/', include('proyecto_prevencion.admins.urls')),
     
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

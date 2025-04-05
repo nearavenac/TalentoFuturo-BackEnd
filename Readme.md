@@ -66,13 +66,15 @@ python -m uvicorn plan_prevencion.asgi:application \
 
 ### 6. Explicación de EndPoints
 
+Para ver la documentación y realizar pruebas puede ingresar a:
 
+[Documentación Swagger](http://127.0.0.1:8000/api/docs/)
 
 ## Explicación de Front 
 
 <p aling-text='center'>Se recrearon los endpoints anteriores con renderización de HTML para mejorar su comprención y aplicabilidad. A continuación se explicarán en terminos generales que realiza cada ruta.
 
-Al ingresas al dominio (http://127.0.0.1:8000/), se renderizara por defecto  `home.html`. En este template tenemos varias acciones posibles. </p>
+Al ingresas al dominio ([http://127.0.0.1:8000/](http://127.0.0.1:8000/)), se renderizara por defecto  `home.html`. En este template tenemos varias acciones posibles. </p>
 
 1. Registrarnos para poder acceder a visualizar y verificar diferentes acciones dentro del **panel de usuarios** (estados de las medidas).
 2. Iniciar sesión como usuario (los usuarios registrados unicamente tendras este acceso).

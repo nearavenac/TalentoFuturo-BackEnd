@@ -152,19 +152,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.BasicAuthentication',
-    #     'rest_framework.authentication.SessionAuthentication',
-    # ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAdminUser',
-    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API de Plan Prevencion',
-    'DESCRIPTION': 'Una API para gestionar Organismos Publicos y medidas de prevencion.',
+    'DESCRIPTION': 'API para registrar y reportar medidas de avance de los PPDA por parte de los organismos sectoriales, con enfoque en el plan de Concón, Quintero y Puchuncaví.',
     'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'PREPROCESSING_HOOKS': [
+        'proyecto_prevencion.utils.filter_api_paths.filter_api_paths'
+    ]
 }
 
 AUTHENTICATION_BACKENDS = (

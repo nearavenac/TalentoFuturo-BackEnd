@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
 class OrganismoPublico(models.Model):
     nombre_organismo = models.CharField(max_length=100)
     activo = models.BooleanField(default=True)

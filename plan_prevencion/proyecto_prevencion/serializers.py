@@ -1,87 +1,106 @@
 from   rest_framework import serializers
-from   .models import OrganismoPublico, TiposMedidas, Medida, Indicador, Usuario
+from   .models import OrganismoPublico, ComunaPlan, TiposMedidas, Medida, DocumentoRequerido, Indicador, DocumentoSubido, Usuario
 
 class OrganismoPublicoSerializer(serializers.ModelSerializer):
-    """
-    Serializer para el modelo OrganismoPublico
-
-    Este serializar convierte instancias del modelo OrganismoPublico a representaciones JSON
-
-    Atributos:
-    - id_organismo(int): identificador único del organismo
-    - nombre_organismo(str): nombre del organismo
-    """
     class Meta:
         model = OrganismoPublico
         fields = '__all__'
 
+class ComunaPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComunaPlan
+        fields = '__all__'
+
 class TiposMedidasSerializer(serializers.ModelSerializer):
-    """
-    Serializer para el modelo TiposMedidas
-
-    Este serializar convierte instancias del modelo TiposMedidas a representaciones JSON
-
-    Atributos:
-    - id_tipo_medida(int): identificador único del tipo de medida
-    - nombre_tipo_medida(str): nombre del tipo de medida
-    """
     class Meta:
         model = TiposMedidas
         fields = '__all__'
 
+class DocumentoRequeridoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocumentoRequerido
+        fields = '__all__'
+
 class MedidaSerializer(serializers.ModelSerializer):
-    """
-    Serializer para el modelo Medida
+    documentos_requeridos = DocumentoRequeridoSerializer(many=True, read_only=True)
 
-    Este serializar convierte instancias del modelo Medida a representaciones JSON
-
-    Atributos:
-    - id_medida(int): identificador único de la medida
-    - id_tipo_medida(int): identificador del tipo de medida
-    - nombre_largo(str): nombre largo de la medida
-    - id_organismo(int): identificador del organismo al que pertenece la medida
-    - regulatorio(bool): si la medida es regulatoria o no
-    - tipo_formula(float): tipo de formula que se utiliza para calcular el indicador
-    - datos_requeridos(str): datos requeridos para realizar la medida
-    - formula(float): formula matemática para calcular el indicador
-    - umbral_medida(float): umbral de la medida
-    """
+    tipo_medida = serializers.PrimaryKeyRelatedField(
+        queryset=TiposMedidas.objects.all()
+    )
+    organismo = serializers.PrimaryKeyRelatedField(
+        queryset=OrganismoPublico.objects.all()
+    )
+    
     class Meta:
         model = Medida
         fields = '__all__'
 
 class IndicadorSerializer(serializers.ModelSerializer):
-    """
-    Serializer para el modelo Indicador
-
-    Este serializar convierte instancias del modelo Indicador a representaciones JSON
-
-    Atributos:
-    - id_indicador(int): identificador único del indicador
-    - id_medida(int): identificador del tipo de medida
-    - data(dict): datos del indicador
-    - calculo_indicador(float): valor del indicador
-    - cumple_requisitos(bool): si cumplen los requisitos para el indicador
-    - fecha_reporte(date): fecha de reporte del indicador
-    """
     class Meta:
         model = Indicador
         fields = '__all__'
 
+class DocumentoSubidoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocumentoSubido
+        fields = '__all__'
+
+class RechazoIndicadorSerializer(serializers.Serializer):
+    motivo = serializers.CharField(help_text="Motivo del rechazo", required=True)
+
 class UsuarioSerializer(serializers.ModelSerializer):
-    """
-    Serializer para el modelo Usuario
-
-    Este serializar convierte instancias del modelo Usuario a representaciones JSON
-
-    Atributos:
-    - id_usuario(int): identificador único del usuario
-    - rut_usuario(str): rut del usuario
-    - nombre_usuario(str): nombre del usuario
-    - direccion(str): direccion del usuario
-    - correo(str): correo electrónico del usuario
-    - id_organismo(int): identificador del organismo al que pertenece el usuario
-    """
     class Meta:
         model = Usuario
         fields = '__all__'
+
+class UsuarioRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Usuario
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'rut_usuario', 'organismo']
+
+    def create(self, validated_data):
+        user = Usuario.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email'),
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            rut_usuario=validated_data.get('rut_usuario'),
+            organismo=validated_data.get('organismo'),
+            aprobado=False
+        )
+        return user
+    
+def generar_documentos_serializer(medida):
+    campos = {}
+    for doc in medida.documentos_requeridos.all():
+        field_name = f'doc_{doc.id}'
+        campos[field_name] = serializers.FileField(
+            required=True,
+            help_text=doc.descripcion,
+            label=doc.descripcion
+        )
+
+    return type(
+        f'DocumentoSubidoSerializerMedida{medida.id}',
+        (serializers.Serializer,),
+        campos
+    )
+
+class IndicadorEstadoSerializer(serializers.Serializer):
+    medida = MedidaSerializer()
+    indicador_id = serializers.IntegerField(required=False)
+    cumple_requisitos = serializers.BooleanField(required=False)
+    fecha_reporte = serializers.DateTimeField(required=False)
+
+class DashboardDataSerializer(serializers.Serializer):
+    approved = IndicadorEstadoSerializer(many=True)
+    pending_review = IndicadorEstadoSerializer(many=True)
+    rejected = IndicadorEstadoSerializer(many=True)
+    pending_completion = IndicadorEstadoSerializer(many=True)
+
+class DashboardResponseSerializer(serializers.Serializer):
+    success = serializers.BooleanField()
+    data = DashboardDataSerializer()

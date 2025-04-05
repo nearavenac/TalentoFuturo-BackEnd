@@ -9,10 +9,8 @@ from django.db import IntegrityError
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-# Importaciones de DRF
-from rest_framework.decorators import api_view, authentication_classes, permission_classes, renderer_classes
+from rest_framework.decorators import api_view, authentication_classes, renderer_classes
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 
@@ -28,7 +26,7 @@ class AdminLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('admin_usuarios')
 
-# --- Vistas protegidas con DRF para renderizar HTML ---
+# --- Usuarios ---
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication])

@@ -63,3 +63,28 @@ python -m uvicorn plan_prevencion.asgi:application \
     --host 127.0.0.1 \
     --port 8000
 ```
+
+### 6. Explicación de EndPoints
+
+
+
+## Explicación de Front 
+
+<p aling-text='center'>Se recrearon los endpoints anteriores con renderización de HTML para mejorar su comprención y aplicabilidad. A continuación se explicarán en terminos generales que realiza cada ruta.
+
+Al ingresas al dominio (http://127.0.0.1:8000/), se renderizara por defecto  `home.html`. En este template tenemos varias acciones posibles. </p>
+
+1. Registrarnos para poder acceder a visualizar y verificar diferentes acciones dentro del **panel de usuarios** (estados de las medidas).
+2. Iniciar sesión como usuario (los usuarios registrados unicamente tendras este acceso).
+3. Iniciar sesión como administrador.
+    
+<p aling-text='center'>Una vez se inicie sesión como **usuario**, estará disponible el panel en la parte superior izquierda, en donde podemos evaluar y visualizar el estado de las medidas. Hay que recalcar que para entrar como usuario un administrador debe permitir al usuario.</p>
+
+### Panel de administrador
+
+<p aling-text='center'>En caso de que iniciemos sesión como administrador, tendremos varias opción para elegir.</p>
+
+1. **Pestaña de Usuario**: En la pantalla principal, notaremos que podemos administrar los usuarios que se quieran registrar. Tendremos acciones de aprobar a un nuevo usuario como de desactivar su cuenta.
+2. **Pestaña de Reportes**: En este apartado se tendra un registro del estado general de una medida, añadiendo información de los responsables, estados y acciones a tomar para cada uno de los planes.
+3. **Pestaña de Mantenedores**: En esta pestaña se pueden administrar los organismos publicos existentes, las comunas, los tipos de medida y las medidas (Agregar, editar y eliminar).
+    

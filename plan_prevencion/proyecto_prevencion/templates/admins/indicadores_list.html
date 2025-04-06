@@ -46,11 +46,15 @@
             {% endif %}
           </td>
           <td>
+            <ul>
             {% for doc_subido in indicador.documentos_subidos.all %}
-              <a href="{{ doc_subido.archivo.url }}" target="_blank">Ver</a><br>
+              <li>
+                <a href="{{ doc_subido.archivo.url }}" target="_blank">{{ doc_subido.indicador.medida.nombre_corto }}</a><br>
+              </li>
             {% empty %}
               <span class="text-muted">No hay archivos</span>
             {% endfor %}
+            </ul>
           </td>
           <td>
             {% if indicador.motivo_rechazo %}

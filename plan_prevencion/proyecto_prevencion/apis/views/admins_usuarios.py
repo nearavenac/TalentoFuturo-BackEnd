@@ -1,12 +1,12 @@
+from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from proyecto_prevencion.models import Usuario
-from proyecto_prevencion.serializers import UsuarioSerializer
+from proyecto_prevencion.apis.serializers import UsuarioSerializer
 from proyecto_prevencion.apis.permissions import IsSuperUser
 
 
@@ -22,8 +22,36 @@ from proyecto_prevencion.apis.permissions import IsSuperUser
         "para corroborar el cumplimiento de las medidas establecidas."
     ),
     responses={
-        200: dict
-    }
+        200: OpenApiTypes.OBJECT,
+        500: OpenApiTypes.OBJECT
+    },
+    examples=[
+        OpenApiExample(
+            name="Lista de usuarios",
+            value={
+                "success": True,
+                "data": {
+                    "approved_users": [
+                        {"id": 1, "email": "usuario1@org.com", "aprobado": True}
+                    ],
+                    "pending_users": [
+                        {"id": 2, "email": "usuario2@org.com", "aprobado": False}
+                    ]
+                }
+            },
+            response_only=True,
+            status_codes=["200"]
+        ),
+        OpenApiExample(
+            name="Error del servidor",
+            value={
+                "success": False,
+                "error": "Error interno al listar usuarios."
+            },
+            response_only=True,
+            status_codes=["500"]
+        )
+    ]
 )
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
@@ -55,7 +83,39 @@ def api_usuarios_list(request):
         "- Subir los documentos requeridos\n\n"
         "También se envía automáticamente un correo notificando al usuario que su cuenta ha sido habilitada."
     ),
-    responses={200: dict}
+    responses={
+        200: OpenApiTypes.OBJECT,
+        500: OpenApiTypes.OBJECT
+    },
+    examples=[
+        OpenApiExample(
+            name="Usuario aprobado",
+            value={
+                "success": True,
+                "message": "Usuario aprobado correctamente."
+            },
+            response_only=True,
+            status_codes=["200"]
+        ),
+        OpenApiExample(
+            name="Aprobado pero falló el correo",
+            value={
+                "success": False,
+                "message": "Usuario aprobado, pero falló el envío de correo."
+            },
+            response_only=True,
+            status_codes=["200"]
+        ),
+        OpenApiExample(
+            name="Error del servidor",
+            value={
+                "success": False,
+                "error": "No se pudo aprobar el usuario."
+            },
+            response_only=True,
+            status_codes=["500"]
+        )
+    ]
 )
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
@@ -93,7 +153,30 @@ def api_aprobar_usuario(request, user_id):
         "- No podrá cargar documentos ni reportar nuevas medidas\n"
         "- Su información permanece registrada, pero en estado inactivo"
     ),
-    responses={200: dict}
+    responses={
+        200: OpenApiTypes.OBJECT,
+        500: OpenApiTypes.OBJECT
+    },
+    examples=[
+        OpenApiExample(
+            name="Usuario desactivado",
+            value={
+                "success": True,
+                "message": "Usuario desactivado correctamente."
+            },
+            response_only=True,
+            status_codes=["200"]
+        ),
+        OpenApiExample(
+            name="Error del servidor",
+            value={
+                "success": False,
+                "error": "No se pudo desactivar el usuario."
+            },
+            response_only=True,
+            status_codes=["500"]
+        )
+    ]
 )
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])

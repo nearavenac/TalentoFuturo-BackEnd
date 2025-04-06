@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from proyecto_prevencion.models import Indicador, Medida
-from proyecto_prevencion.serializers import IndicadorSerializer, RechazoIndicadorSerializer
+from proyecto_prevencion.apis.serializers import IndicadorSerializer, RechazoIndicadorSerializer
 from proyecto_prevencion.apis.permissions import IsSuperUser
 
 @extend_schema(

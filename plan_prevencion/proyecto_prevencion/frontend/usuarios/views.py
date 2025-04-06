@@ -1,5 +1,6 @@
 # usuarios/views.py
 import os
+import uuid
 from django.core.files.storage import default_storage
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
@@ -84,11 +85,8 @@ def dashboard(request):
 @renderer_classes([TemplateHTMLRenderer])
 def subir_documentos(request, medida_id):
     user = request.user
-    if user.is_superuser:
-        messages.error(
-            request, "Los administradores no pueden subir documentos.")
-        return redirect(reverse_lazy('usuario_dashboard'))
     medida = get_object_or_404(Medida, pk=medida_id)
+
     if medida.organismo != user.organismo:
         messages.error(
             request, "No tienes permiso para subir documentos para esta medida.")
@@ -111,7 +109,9 @@ def subir_documentos(request, medida_id):
                     field_name = f'doc_{doc.id}'
                     file = form.cleaned_data.get(field_name)
                     if file:
-                        filename = default_storage.save(file.name, file)
+                        original_extension = os.path.splitext(file.name)[1]
+                        unique_filename = f"{uuid.uuid4().hex}_doc_{doc.id}{original_extension}"
+                        filename = default_storage.save(unique_filename, file)
                         DocumentoSubido.objects.create(
                             indicador=indicador,
                             documento_requerido=doc,

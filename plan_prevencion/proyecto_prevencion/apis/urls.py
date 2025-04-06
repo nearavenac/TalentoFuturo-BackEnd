@@ -41,4 +41,5 @@ urlpatterns = [
     path('usuario/register/', usuario.api_register, name='api_register'),
     path('usuario/dashboard/', usuario.api_dashboard, name='api_usuario_dashboard'),
     path('usuario/medidas/subir/<int:medida_id>/', usuario.api_subir_documentos, name='api_subir_documentos'),
+    path('usuario/medidas/<int:medida_id>/documentos-requeridos/', usuario.listar_documentos_requeridos, name='api_documentos_requeridos'),
 ]

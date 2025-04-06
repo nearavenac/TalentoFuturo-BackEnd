@@ -21,7 +21,7 @@ from django.contrib import admin
 from rest_framework import routers
 from proyecto_prevencion import views
 from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -38,8 +38,8 @@ urlpatterns = [
 
     path('auth/', include('social_django.urls', namespace='social')),
 
-    path('usuarios/', include('proyecto_prevencion.usuarios.urls')),
-    path('admins/', include('proyecto_prevencion.admins.urls')),
+    path('usuarios/', include('proyecto_prevencion.frontend.usuarios.urls')),
+    path('admins/', include('proyecto_prevencion.frontend.admins.urls')),
     path('api/', include('proyecto_prevencion.apis.urls')),
     
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

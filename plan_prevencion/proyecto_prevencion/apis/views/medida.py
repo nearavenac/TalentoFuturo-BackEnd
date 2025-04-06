@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from proyecto_prevencion.apis.permissions import IsSuperUser
 from proyecto_prevencion.models import Medida
-from proyecto_prevencion.serializers import MedidaSerializer
+from proyecto_prevencion.apis.serializers import MedidaSerializer
 
 @extend_schema(
     tags=["Medidas"],

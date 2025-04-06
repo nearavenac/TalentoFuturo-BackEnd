@@ -28,8 +28,8 @@ SECRET_KEY = 'django-insecure-hh9$4!agm+els)!1makt5vs=!neyytw5o5-$00wfadb^$*kpo(
 DEBUG = True
 DEBUG = config('DEBUG', cast=bool, default=True)
 
-MEDIA_URL = '/uploads/'
-MEDIA_ROOT = BASE_DIR / 'uploads'
+MEDIA_URL = 'proyecto_prevencion/uploads/'
+MEDIA_ROOT = BASE_DIR / 'proyecto_prevencion/uploads'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 LOGOUT_REDIRECT_URL = 'home'

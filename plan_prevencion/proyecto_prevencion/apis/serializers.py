@@ -1,5 +1,5 @@
-from   rest_framework import serializers
-from   .models import OrganismoPublico, ComunaPlan, TiposMedidas, Medida, DocumentoRequerido, Indicador, DocumentoSubido, Usuario
+from rest_framework import serializers
+from proyecto_prevencion.models import OrganismoPublico, ComunaPlan, TiposMedidas, Medida, DocumentoRequerido, Indicador, DocumentoSubido, Usuario
 
 class OrganismoPublicoSerializer(serializers.ModelSerializer):
     class Meta:

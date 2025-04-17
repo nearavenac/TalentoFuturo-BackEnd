@@ -30,7 +30,11 @@ DEBUG = config('DEBUG_PROD', cast=bool, default=True)
 MEDIA_URL = 'proyecto_prevencion/uploads/'
 MEDIA_ROOT = BASE_DIR / 'proyecto_prevencion/uploads'
 
-ALLOWED_HOSTS = ['talentofuturo-backend.onrender.com']
+ALLOWED_HOSTS = [
+    config('PRODUCTION_HOST'),
+    "localhost",
+    "127.0.0.1",
+]
 LOGOUT_REDIRECT_URL = 'home'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -140,7 +144,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"     # carpeta donde collectstatic vuelca todo
+if (
+    not DEBUG
+):  # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -30,7 +30,7 @@ DEBUG = config('DEBUG_PROD', cast=bool, default=True)
 MEDIA_URL = 'proyecto_prevencion/uploads/'
 MEDIA_ROOT = BASE_DIR / 'proyecto_prevencion/uploads'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['talentofuturo-backend.onrender.com']
 LOGOUT_REDIRECT_URL = 'home'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

@@ -64,6 +64,12 @@ python -m uvicorn plan_prevencion.asgi:application \
     --port 8000
 ```
 
+Para los archivos estáticos ejecutar 
+
+```bash
+python manage.py collectstatic --noinput
+```
+
 ### 6. Explicación de EndPoints
 
 Para ver la documentación y realizar pruebas puede ingresar a:

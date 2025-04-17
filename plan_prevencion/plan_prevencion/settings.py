@@ -22,18 +22,16 @@ AUTH_USER_MODEL = 'proyecto_prevencion.Usuario'
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hh9$4!agm+els)!1makt5vs=!neyytw5o5-$00wfadb^$*kpo('
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DEBUG = config('DEBUG', cast=bool, default=True)
+DEBUG = config('DEBUG_PROD', cast=bool, default=True)
 
 MEDIA_URL = 'proyecto_prevencion/uploads/'
 MEDIA_ROOT = BASE_DIR / 'proyecto_prevencion/uploads'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 LOGOUT_REDIRECT_URL = 'home'
-
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -71,8 +69,6 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
-
-
 ROOT_URLCONF = 'plan_prevencion.urls'
 
 TEMPLATES = [
@@ -100,14 +96,13 @@ WSGI_APPLICATION = 'plan_prevencion.wsgi.application'
 DATABASES = {
      'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ppda',
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config('PGDATABASE'),
+        'USER': config('PGUSER'),
+        'PASSWORD': config('PGPASSWORD'),
+        'HOST': config('PGHOST'),
+        'PORT': config('PGPORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

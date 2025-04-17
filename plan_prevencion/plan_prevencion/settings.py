@@ -25,7 +25,7 @@ AUTH_USER_MODEL = 'proyecto_prevencion.Usuario'
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG_PROD', cast=bool, default=True)
+DEBUG = config('DEBUG_PROD', cast=bool, default=False)
 
 MEDIA_URL = 'proyecto_prevencion/uploads/'
 MEDIA_ROOT = BASE_DIR / 'proyecto_prevencion/uploads'
@@ -144,13 +144,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-if (
-    not DEBUG
-):  # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+if (not DEBUG):
     STATIC_ROOT = BASE_DIR / "staticfiles"
-    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
-    # and renames the files with unique names for each version to support long-term caching
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

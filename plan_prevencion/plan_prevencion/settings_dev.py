@@ -16,7 +16,14 @@ from .settings import *
 
 DEBUG = config('DEBUG_DEV', cast=bool, default=True)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+]
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

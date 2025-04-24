@@ -22,6 +22,7 @@ from rest_framework import routers
 from proyecto_prevencion import views
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from debug_toolbar.toolbar import debug_toolbar_urls
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -52,3 +53,4 @@ urlpatterns += [
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += debug_toolbar_urls()

@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
 ]
+
 LOGOUT_REDIRECT_URL = 'home'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'social_django',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'plan_prevencion.urls'
